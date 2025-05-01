@@ -1,0 +1,775 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+    <title>🔥 Анонимный чат | Dark Mode</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --dark: #0f0f15;
+            --darker: #0a0a0f;
+            --light: #f8f9fa;
+            --gray: #2d3436;
+            --success: #00b894;
+            --danger: #d63031;
+            --warning: #fdcb6e;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1, h2 {
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(108, 92, 231, 0.3);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        h1::after {
+            content: "";
+            flex: 1;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), transparent);
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--gray);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        #chat {
+            height: 400px;
+            overflow-y: auto;
+            background: var(--darker);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border: 1px solid var(--gray);
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) var(--darker);
+        }
+        
+        #chat::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #chat::-webkit-scrollbar-track {
+            background: var(--darker);
+        }
+        
+        #chat::-webkit-scrollbar-thumb {
+            background-color: var(--primary);
+            border-radius: 10px;
+        }
+        
+        #chat div {
+            padding: 12px 15px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            border-left: 3px solid var(--primary);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        .message-avatar {
+            font-size: 1.2rem;
+        }
+
+        .message-username {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .message-time {
+            color: var(--secondary);
+            opacity: 0.7;
+        }
+
+        .message-content {
+            padding-left: 32px;
+            line-height: 1.4;
+        }
+        
+        #chat div:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        #chat div[data-private="true"] {
+            background: rgba(108, 92, 231, 0.15);
+            border-left: 3px solid var(--secondary);
+        }
+        
+        #users {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .user-card {
+            background: var(--darker);
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            border: 1px solid var(--gray);
+        }
+        
+        .user-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .user-name {
+            flex: 1;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: var(--gray);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #3d4a4d;
+            transform: translateY(-2px);
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        input {
+            flex: 1;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--gray);
+            background: var(--darker);
+            color: white;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1rem;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.3);
+        }
+        
+        .settings {
+            background: var(--darker);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid var(--gray);
+        }
+        
+        .settings-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: var(--darker);
+            padding: 25px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+            animation: modalFadeIn 0.3s ease;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .avatar-option {
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .avatar-option:hover {
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+        
+        .avatar-option.selected {
+            background: var(--primary);
+            box-shadow: 0 0 0 3px var(--secondary);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(108, 92, 231, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(108, 92, 231, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(108, 92, 231, 0); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        .typing-indicator {
+            color: var(--secondary);
+            font-style: italic;
+            margin-bottom: 10px;
+            display: none;
+        }
+        
+        .my-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--darker);
+            border-radius: 10px;
+            border: 1px solid var(--primary);
+        }
+        
+        .my-profile-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .my-profile-info {
+            flex: 1;
+        }
+        
+        .my-profile-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+        
+        .my-profile-status {
+            font-size: 0.8rem;
+            color: var(--secondary);
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            #users {
+                grid-template-columns: 1fr;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .avatar-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Модальное окно смены аватара и ника -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-user-edit"></i> Настройки профиля</h3>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            
+            <div class="input-group">
+                <input id="usernameInput" placeholder="Введите новый никнейм">
+                <button class="btn btn-primary" onclick="updateUsername()">
+                    <i class="fas fa-check"></i> Сохранить
+                </button>
+            </div>
+            
+            <h4 style="margin: 20px 0 10px; color: var(--secondary);">
+                <i class="fas fa-user-astronaut"></i> Выберите аватар:
+            </h4>
+            
+            <div class="avatar-grid" id="avatarGrid">
+                <!-- Аватары будут добавлены через JS -->
+            </div>
+            
+            <button class="btn btn-secondary" onclick="closeModal()" style="width: 100%;">
+                <i class="fas fa-times"></i> Закрыть
+            </button>
+        </div>
+    </div>
+
+    <h1>
+        <i class="fas fa-fire"></i>
+        Анонимный чат
+    </h1>
+    
+    <!-- Блок моего профиля -->
+    <div class="my-profile" id="myProfile">
+        <div class="my-profile-avatar" onclick="openProfileModal()" id="myAvatar">👤</div>
+        <div class="my-profile-info">
+            <div class="my-profile-name" onclick="openProfileModal()" id="myName">Аноним</div>
+            <div class="my-profile-status">Online</div>
+        </div>
+    </div>
+    
+    <div id="chat"></div>
+    
+    <div class="typing-indicator" id="typing">
+        <i class="fas fa-pencil-alt"></i> Кто-то печатает...
+    </div>
+    
+    <div class="input-group">
+        <input id="msg" placeholder="Напишите сообщение..." autocomplete="off">
+        <button class="btn btn-primary" onclick="sendMessage()">
+            <i class="fas fa-paper-plane"></i> Отправить
+        </button>
+    </div>
+    
+    <div class="settings">
+        <div class="settings-title">
+            <i class="fas fa-cog"></i>
+            <span>Настройки Telegram</span>
+            <span class="badge">NEW</span>
+        </div>
+        <div class="input-group">
+            <input id="tg_token" placeholder="Введите API токен Telegram-бота">
+            <button class="btn btn-secondary" onclick="setTgToken()">
+                <i class="fas fa-save"></i> Сохранить
+            </button>
+        </div>
+    </div>
+    
+    <h2>
+        <i class="fas fa-users"></i>
+        Пользователи онлайн <span id="online-count" class="badge">0</span>
+    </h2>
+    <div id="users"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+    // Явно указываем URL сервера
+    const socket = io('http://localhost:5000', {
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        transports: ['websocket']
+    });
+    
+    const room = 'main';
+    let isTyping = false;
+    let typingTimeout;
+    let myUsername = 'Аноним';
+    let myAvatar = '👤';
+    let selectedAvatar = '👤';
+
+    // Доступные аватары
+    const availableAvatars = [
+        '😀', '😎', '🤖', '👽', '🐶', '🐱', '🦊', '🐼',
+        '🐸', '🦄', '🐲', '🦁', '🐯', '🐨', '🐵', '🐧',
+        '🦉', '🐝', '🐙', '🦋', '🌈', '🔥', '🌊', '🍕'
+    ];
+
+    // Инициализация модального окна с аватарами
+    function initAvatarGrid() {
+        const grid = document.getElementById('avatarGrid');
+        grid.innerHTML = '';
+        
+        availableAvatars.forEach(avatar => {
+            const avatarElement = document.createElement('div');
+            avatarElement.className = 'avatar-option';
+            avatarElement.innerHTML = avatar;
+            avatarElement.onclick = () => selectAvatar(avatar);
+            
+            if (avatar === myAvatar) {
+                avatarElement.classList.add('selected');
+                selectedAvatar = avatar;
+            }
+            
+            grid.appendChild(avatarElement);
+        });
+    }
+
+    function selectAvatar(avatar) {
+        selectedAvatar = avatar;
+        const options = document.querySelectorAll('.avatar-option');
+        options.forEach(opt => opt.classList.remove('selected'));
+        
+        event.target.classList.add('selected');
+    }
+
+    function updateUsername() {
+        const newUsername = document.getElementById('usernameInput').value.trim();
+        if (newUsername) {
+            myUsername = newUsername;
+            document.getElementById('myName').textContent = myUsername;
+            socket.emit('update_profile', {
+                username: myUsername,
+                avatar: myAvatar,
+                room: room
+            });
+            showAlert('Никнейм обновлен!', 'success');
+        }
+    }
+
+    function updateAvatar() {
+        if (selectedAvatar) {
+            myAvatar = selectedAvatar;
+            document.getElementById('myAvatar').textContent = myAvatar;
+            socket.emit('update_profile', {
+                username: myUsername,
+                avatar: myAvatar,
+                room: room
+            });
+            closeModal();
+        }
+    }
+
+    function openProfileModal() {
+        document.getElementById('usernameInput').value = myUsername;
+        initAvatarGrid();
+        document.getElementById('profileModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('profileModal').style.display = 'none';
+        updateAvatar();
+    }
+
+    // Обработчики соединения
+    socket.on('connect', () => {
+        console.log('Connected to server');
+        socket.emit('join', { 
+            room: room,
+            username: myUsername,
+            avatar: myAvatar
+        });
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Disconnected from server');
+    });
+
+    socket.on('connect_error', (err) => {
+        console.error('Connection error:', err);
+        showAlert('Ошибка подключения к серверу', 'danger');
+    });
+
+    // Автофокус на поле ввода
+    document.getElementById('msg').focus();
+
+    // Отправка сообщения по Enter
+    document.getElementById('msg').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+        
+        if (!isTyping) {
+            isTyping = true;
+            socket.emit('typing', { isTyping: true, room: room });
+        }
+        
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
+            isTyping = false;
+            socket.emit('typing', { isTyping: false, room: room });
+        }, 1000);
+    });
+
+    // Обработчики сообщений
+    socket.on('message', data => {
+        console.log('New message:', data);
+        const chat = document.getElementById('chat');
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
+        chat.innerHTML += `
+            <div>
+                <div class="message-header">
+                    <span class="message-avatar">${data.avatar || '👤'}</span>
+                    <span class="message-username">${data.username || 'Аноним'}</span>
+                    <span class="message-time">${time}</span>
+                </div>
+                <div class="message-content">${data.msg}</div>
+            </div>
+        `;
+        chat.scrollTop = chat.scrollHeight;
+    });
+
+    socket.on('private_message', data => {
+        console.log('New private message:', data);
+        const chat = document.getElementById('chat');
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
+        chat.innerHTML += `
+            <div data-private="true">
+                <div class="message-header">
+                    <span class="message-avatar">${data.avatar || '👤'}</span>
+                    <span class="message-username"><i class="fas fa-lock"></i> ${data.username || 'Аноним'}</span>
+                    <span class="message-time">${time}</span>
+                </div>
+                <div class="message-content">${data.msg}</div>
+            </div>
+        `;
+        chat.scrollTop = chat.scrollHeight;
+        playNotificationSound();
+    });
+
+    socket.on('update_user_list', data => {
+        console.log('User list update:', data);
+        let html = '';
+        
+        // Сначала добавляем себя в начало списка
+        if (data.users[socket.id]) {
+            const user = data.users[socket.id];
+            myUsername = user.username || 'Аноним';
+            myAvatar = user.avatar || '👤';
+            document.getElementById('myName').textContent = myUsername;
+            document.getElementById('myAvatar').textContent = myAvatar;
+        }
+        
+        // Затем добавляем остальных пользователей
+        Object.entries(data.users).forEach(([sid, user]) => {
+            if (sid !== socket.id) { // Пропускаем себя в общем списке
+                html += `
+                    <div class="user-card">
+                        <div class="user-avatar">
+                            ${user.avatar || '👤'}
+                        </div>
+                        <div class="user-name" title="${user.username || 'Аноним'}">
+                            ${user.username || 'Аноним'}
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="sendPrivate('${sid}')">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                `;
+            }
+        });
+        
+        document.getElementById('users').innerHTML = html;
+        document.getElementById('online-count').textContent = Object.keys(data.users).length;
+    });
+
+    socket.on('typing', data => {
+        const typingElement = document.getElementById('typing');
+        typingElement.style.display = data.isTyping ? 'block' : 'none';
+    });
+
+    // Функции
+    function sendMessage() {
+        const msgInput = document.getElementById('msg');
+        const msg = msgInput.value.trim();
+        
+        if (msg !== '') {
+            console.log('Sending message:', msg);
+            socket.emit('message', { 
+                msg: msg, 
+                room: room,
+                username: myUsername,
+                avatar: myAvatar
+            });
+            msgInput.value = '';
+            msgInput.focus();
+        }
+    }
+
+    function setTgToken() {
+        const token = document.getElementById('tg_token').value.trim();
+        if (token !== '') {
+            socket.emit('set_tg_token', { token: token });
+            showAlert('Токен сохранен!', 'success');
+        }
+    }
+
+    function sendPrivate(sid) {
+        const msg = prompt('Введите личное сообщение:');
+        if (msg) {
+            socket.emit('send_private_message', { 
+                to: sid, 
+                msg: msg, 
+                room: room,
+                username: myUsername,
+                avatar: myAvatar
+            });
+        }
+    }
+
+    function playNotificationSound() {
+        const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-software-interface-start-2574.mp3');
+        audio.volume = 0.3;
+        audio.play().catch(e => console.log('Audio play failed:', e));
+    }
+
+    function showAlert(message, type) {
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type}`;
+        alert.innerHTML = `
+            <div style="position: fixed; top: 20px; right: 20px; padding: 15px; 
+            background: ${type === 'success' ? '#00b894' : '#d63031'}; 
+            color: white; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 1000; animation: fadeIn 0.3s ease;">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                ${message}
+            </div>
+        `;
+        document.body.appendChild(alert);
+        
+        setTimeout(() => {
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 300);
+        }, 3000);
+    }
+</script>
+</body>
+</html>
